@@ -31,37 +31,41 @@ mod voter {
         }
 
         #[ink(message)]
-        pub fn increment_vote(&mut self) {
-            self.vote_count += 1;
-        }
-
-        #[ink(message)]
-        pub fn decrease_vote(&mut self) {
-            self.vote_count = self.vote_count - 1
-        }
-
-        #[ink(message)]
-        pub fn get_votes(&mut self) -> i32 {
-            self.vote_count
-        }
-
-        #[ink(message)]
-        pub fn increment_my_vote_count(&mut self, by: i32) {
+        pub fn increment_my_vote(&mut self) {
             let caller = self.env().caller();
-            let id = self.get_my_vote_count();
+            let id = self.get_my_vote();
+            let increment = id + 1;
             self.increment_vote();
-            self.id.insert(caller, &(id + by));
+            self.id.insert(caller, &(increment));
         }
 
         #[ink(message)]
-        pub fn get_my_vote_count(&mut self) -> i32 {
+        pub fn decrement_my_vote(&mut self) {
+            let caller = self.env().caller();
+            let id = self.get_my_vote();
+            let decrement = id - 1;
+            self.decrement_vote();
+            self.id.insert(caller, &(decrement));
+        }
+
+        #[ink(message)]
+        pub fn get_my_vote(&self) -> i32 {
             self.id.get(&self.env().caller()).unwrap_or_default()
         }
 
         #[ink(message)]
-        pub fn remove_my_vote_count(&mut self) {
-            self.id.remove(&self.env().caller());
-            self.decrease_vote()
+        pub fn increment_vote(&mut self) {
+            self.vote_count = self.vote_count + 1;
+        }
+
+        #[ink(message)]
+        pub fn decrement_vote(&mut self) {
+            self.vote_count = self.vote_count - 1
+        }
+
+        #[ink(message)]
+        pub fn get_votes(&self) -> i32 {
+            self.vote_count
         }
     }
 }
