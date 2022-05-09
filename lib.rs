@@ -49,7 +49,7 @@ mod voter {
         }
 
         #[ink(message)]
-        pub fn get_my_vote(&mut self) -> i32 {
+        pub fn get_my_vote(&self) -> i32 {
             self.id.get(&self.env().caller()).unwrap_or_default()
         }
 
@@ -64,7 +64,7 @@ mod voter {
         }
 
         #[ink(message)]
-        pub fn get_votes(&mut self) -> i32 {
+        pub fn get_votes(&self) -> i32 {
             self.vote_count
         }
     }
