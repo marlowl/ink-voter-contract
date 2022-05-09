@@ -68,4 +68,46 @@ mod voter {
             self.vote_count
         }
     }
+    
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        use ink_lang as ink;
+
+        #[ink::test]
+        fn test_default() {
+            let contract = Voter::default();
+            assert_eq!(contract.get_my_vote(), 0);
+        }
+
+        #[ink::test]
+        fn test_increment_my_vote() {
+            let mut contract = Voter::default();
+            assert_eq!(contract.get_my_vote(), 0);
+            contract.increment_my_vote();
+            assert_eq!(contract.get_my_vote(), 1);
+            contract.increment_my_vote();
+            assert_eq!(contract.get_my_vote(), 2);
+        }
+
+        #[ink::test]
+        fn test_decrement_my_vote() {
+            let mut contract = Voter::default();
+            assert_eq!(contract.get_my_vote(), 0);
+            contract.increment_my_vote();
+            assert_eq!(contract.get_my_vote(), 1);
+            contract.decrement_my_vote();
+            assert_eq!(contract.get_my_vote(), 0);
+        }
+
+        #[ink::test]
+        fn test_get_votes() {
+            let mut contract = Voter::default();
+            contract.increment_my_vote();
+            assert_eq!(contract.get_votes(), 1);
+            contract.decrement_my_vote();
+            assert_eq!(contract.get_votes(), 0);
+        }
+    }
 }
