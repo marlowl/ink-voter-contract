@@ -104,9 +104,9 @@ mod voter {
         fn test_get_total_votes() {
             let mut contract = Voter::default();
             contract.increment_my_vote();
-            assert_eq!(contract.get_total_votes(), 1);
+            assert_eq!(contract.get_my_vote(), 1);
             contract.decrement_my_vote();
-            assert_eq!(contract.get_total_votes(), 0);
+            assert_eq!(contract.get_my_vote(), 0);
         }
     }
 }
