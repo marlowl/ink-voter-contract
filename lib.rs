@@ -15,15 +15,6 @@ mod voter {
 
     impl Voter {
         #[ink(constructor)]
-        pub fn new(init_value: i32) -> Self {
-            ink_lang::utils::initialize_contract(|contract: &mut Self| {
-                contract.vote_count = init_value;
-                let caller = Self::env().caller();
-                contract.id.insert(&caller, &0);
-            })
-        }
-
-        #[ink(constructor)]
         pub fn default() -> Self {
             ink_lang::utils::initialize_contract(|contract: &mut Self| {
                 contract.vote_count = Default::default();
@@ -43,7 +34,14 @@ mod voter {
         pub fn decrement_my_vote(&mut self) {
             let caller = self.env().caller();
             let id = self.get_my_vote();
-            let decrement = id - 1;
+
+            let decrement;
+            if id > 0 {
+                decrement = id - 1;
+            } else {
+                decrement = id;
+            }
+
             self.decrement_vote();
             self.id.insert(caller, &(decrement));
         }
@@ -53,18 +51,19 @@ mod voter {
             self.id.get(&self.env().caller()).unwrap_or_default()
         }
 
-        #[ink(message)]
-        pub fn increment_vote(&mut self) {
+        fn increment_vote(&mut self) {
             self.vote_count = self.vote_count + 1;
         }
-
-        #[ink(message)]
-        pub fn decrement_vote(&mut self) {
-            self.vote_count = self.vote_count - 1
+        
+        fn decrement_vote(&mut self) {
+            let vote_count = self.vote_count;
+            if vote_count > 0 {
+                self.vote_count = self.vote_count - 1
+            }
         }
 
         #[ink(message)]
-        pub fn get_votes(&self) -> i32 {
+        pub fn get_total_votes(&self) -> i32 {
             self.vote_count
         }
     }
@@ -102,12 +101,12 @@ mod voter {
         }
 
         #[ink::test]
-        fn test_get_votes() {
+        fn test_get_total_votes() {
             let mut contract = Voter::default();
             contract.increment_my_vote();
-            assert_eq!(contract.get_votes(), 1);
+            assert_eq!(contract.get_total_votes(), 1);
             contract.decrement_my_vote();
-            assert_eq!(contract.get_votes(), 0);
+            assert_eq!(contract.get_total_votes(), 0);
         }
     }
 }
