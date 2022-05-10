@@ -51,6 +51,11 @@ mod voter {
             self.id.get(&self.env().caller()).unwrap_or_default()
         }
 
+        #[ink(message)]
+        pub fn get_total_votes(&self) -> i32 {
+            self.vote_count
+        }
+
         fn increment_vote(&mut self) {
             self.vote_count = self.vote_count + 1;
         }
@@ -60,11 +65,6 @@ mod voter {
             if vote_count > 0 {
                 self.vote_count = self.vote_count - 1
             }
-        }
-
-        #[ink(message)]
-        pub fn get_total_votes(&self) -> i32 {
-            self.vote_count
         }
     }
     
@@ -92,6 +92,18 @@ mod voter {
 
         #[ink::test]
         fn test_decrement_my_vote() {
+            let mut contract = Voter::default();
+            assert_eq!(contract.get_my_vote(), 0);
+            contract.increment_my_vote();
+            assert_eq!(contract.get_my_vote(), 1);
+            contract.decrement_my_vote();
+            assert_eq!(contract.get_my_vote(), 0);
+            contract.decrement_my_vote();
+            assert_eq!(contract.get_my_vote(), 0);
+        }
+
+        #[ink::test]
+        fn test_get_my_vote() {
             let mut contract = Voter::default();
             assert_eq!(contract.get_my_vote(), 0);
             contract.increment_my_vote();
